@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "988141056194",
+    "project_id": "fixsathi-80116",
+    "storage_bucket": "fixsathi-80116.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988141056194:android:f234c705e84ccbfe6c4b5b",
+        "android_client_info": {
+          "package_name": "com.fixsathi.fixsathi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988141056194-j8snl1erp9ul7q5f6rh0giu9khck0dnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4SE_IymkBcOTHKDQniKqhnUdR6U_J7GQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988141056194-j8snl1erp9ul7q5f6rh0giu9khck0dnf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "988141056194-rpan3fbgi5rsfvoatmiuqdpvkaohm1r0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fixsathi.fixsathi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
