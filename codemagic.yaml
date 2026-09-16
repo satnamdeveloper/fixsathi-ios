@@ -2,16 +2,16 @@ workflows:
   ios-app-store-release:
     name: Flutter iOS App Store Release Build
     max_build_duration: 60
-    instance_type: mac_mini_m2 # Aapki machine ke liye updated instance type
+    instance_type: mac_mini_m2
     environment:
       groups:
         - app_store_credentials 
       vars:
-        FLUTTER_VERSION: "stable"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-      xcode:
-        latest: true
+      # Software versions 'environment' ke direct andar aani chahiye (vars ke andar nahi)
+      flutter: stable
+      xcode: latest
       cocoapods: default
     triggering:
       events:
@@ -21,7 +21,7 @@ workflows:
     scripts:
       - name: Set up Flutter
         script: |
-          flutter channel $FLUTTER_VERSION
+          flutter channel stable
           flutter upgrade
       - name: Initialize keychain
         script: |
