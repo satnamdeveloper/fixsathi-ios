@@ -1,0 +1,57 @@
+workflows:
+  ios-app-store-release:
+    name: Flutter iOS App Store Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      groups:
+        # Codemagic UI me ye group banayein aur App Store API keys add karein
+        - app_store_credentials 
+      vars:
+        FLUTTER_VERSION: "stable" # Ya phir aap apni specific version likh sakte hain jaise "3.24.0"
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      xcode:
+        latest: true
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - target: main # Jab aap main branch par push karenge to auto-build start hoga
+    scripts:
+      - name: Set up Flutter
+        script: |
+          flutter channel $FLUTTER_VERSION
+          flutter upgrade
+      - name: Initialize keychain
+        script: |
+          keychain initialize
+      - name: Fetch signing profiles from Apple Developer Portal
+        script: |
+          # Yeh command automatic provisioning profiles aur certificates download karegi
+          app-store-connect fetch-signing-files "$APP_STORE_APP_ID" --profiles-type APP_STORE --create
+      - name: Set up code signing in Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Install Flutter dependencies and CocoaPods
+        script: |
+          # Flutter packages aur iOS Pods install karne ke liye
+          flutter pub get
+          cd ios && pod install --repo-update && cd ..
+      - name: Build iOS IPA (Flutter)
+        script: |
+          # Flutter build command jo App Store ke liye release IPA banayegi
+          flutter build ipa --release \
+            --export-options-plist=$HOME/export_options.plist \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        # Yeh aapki build ko automatic App Store Connect/TestFlight par upload kar dega
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true 
