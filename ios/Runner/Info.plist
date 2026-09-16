@@ -117,6 +117,9 @@
 		<string>tel</string>
 		<string>sms</string>
 	</array>
-
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+	    <string>com.fixsathi.fixsathi.backgroundTask</string>
+	</array>
 </dict>
 </plist>
