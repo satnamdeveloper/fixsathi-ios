@@ -18,7 +18,7 @@ workflows:
       events:
         - push
       branch_patterns:
-        - target: main # Jab aap main branch par push karenge to auto-build start hoga
+        - patterns: 'main'
     scripts:
       - name: Set up Flutter
         script: |
