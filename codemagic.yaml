@@ -2,7 +2,7 @@ workflows:
   ios-app-store-release:
     name: Flutter iOS App Store Release Build
     max_build_duration: 60
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2 # Aapki machine ke liye updated instance type
     environment:
       groups:
         - app_store_credentials 
@@ -18,8 +18,6 @@ workflows:
         - push
       branch_patterns:
         - pattern: 'main'
-          include: true
-          source: true
     scripts:
       - name: Set up Flutter
         script: |
@@ -33,7 +31,6 @@ workflows:
           app-store-connect fetch-signing-files "$APP_STORE_APP_ID" --profiles-type APP_STORE --create
       - name: Set up code signing in Xcode project
         script: |
-          # Yeh command automatic export_options.plist file generate karti hai
           xcode-project use-profiles
       - name: Install Flutter dependencies and CocoaPods
         script: |
@@ -41,7 +38,6 @@ workflows:
           cd ios && pod install --repo-update && cd ..
       - name: Build iOS IPA (Flutter)
         script: |
-          # Codemagic builder ka exact standard path use kiya gaya hai
           flutter build ipa --release \
             --export-options-plist=/Users/builder/export_options.plist \
             --workspace "$XCODE_WORKSPACE" \
