@@ -1,52 +1,65 @@
-workflows:
-  ios-app-store-release:
-    name: Flutter iOS App Store Release Build
-    max_build_duration: 60
+flutter-ios:
+    name: Flutter iOS Workflow
     instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: CD-Manager
     environment:
-      groups:
-        - app_store_credentials 
-      vars:
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
-      # Software versions 'environment' ke direct andar aani chahiye (vars ke andar nahi)
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.fixsathi.fixsathi
       flutter: stable
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: 'main'
     scripts:
-      - name: Set up Flutter
-        script: |
-          flutter channel stable
-          flutter upgrade
-      - name: Initialize keychain
-        script: |
-          keychain initialize
-      - name: Fetch signing profiles from Apple Developer Portal
-        script: |
-          app-store-connect fetch-signing-files "$APP_STORE_APP_ID" --profiles-type APP_STORE --create
-      - name: Set up code signing in Xcode project
+      - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
-      - name: Install Flutter dependencies and CocoaPods
+      - name: Get Flutter packages
         script: |
-          flutter pub get
-          cd ios && pod install --repo-update && cd ..
-      - name: Build iOS IPA (Flutter)
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Build versioning
+        script: |
+            cd ./ios
+            agvtool new-version -all $(($BUILD_NUMBER))
+            agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
+      - name: Flutter build ipa and automatic versioning
         script: |
           flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
     publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: "#builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_ID
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: true 
+        auth: integration
+        
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
