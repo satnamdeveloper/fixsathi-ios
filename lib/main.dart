@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fixsathi/classPack/sessions_file.dart';
 import 'package:fixsathi/clients/dashboard_user.dart';
 import 'package:fixsathi/firebase_options.dart';
-import 'package:fixsathi/frontScreen/login_number.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -131,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Kuch data nahi mila -> Login page par bhejein
-    _navigateToScreen(const SelectMobile(title: 'Fix Sathi'));
+    _navigateToScreen(const MainDashboard());
   }
 
   // Safe Navigation Helper method for zero context issues
