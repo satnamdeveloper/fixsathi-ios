@@ -20,7 +20,8 @@ class ContactDashboard extends StatefulWidget {
 class _ContactDashboardState extends State<ContactDashboard> {
   // File? _selectedFile;
   final translator = GoogleTranslator();
-  String? serviceValue, userLang, appids;
+  String userLang = '';
+  String appids = '';
   Timer? _timer;
 
   Map<String, dynamic> userData = {
@@ -42,7 +43,11 @@ class _ContactDashboardState extends State<ContactDashboard> {
   @override
   void initState() {
     super.initState();
-    _getSessions();
+    _initDashboard();
+  }
+
+  Future<void> _initDashboard() async {
+    await _getSessions();
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!mounted) return;
       translate();
@@ -58,15 +63,17 @@ class _ContactDashboardState extends State<ContactDashboard> {
   Future<void> _getSessions() async {
     try {
       var sharedPreferences = await SessionUrl().getUserdata();
-      Map<String, dynamic> usersAll = convert.jsonDecode(sharedPreferences!);
-      if (usersAll.isNotEmpty) {
-        if (!mounted) return;
-        setState(() {
-          userLang = usersAll['language'];
-          userData = usersAll;
-        });
-      } else {
-        debugPrint('not print');
+      if (sharedPreferences != null) {
+        Map<String, dynamic> usersAll = convert.jsonDecode(sharedPreferences!);
+        if (usersAll.isNotEmpty) {
+          if (!mounted) return;
+          setState(() {
+            userLang = usersAll['language'];
+            userData = usersAll;
+          });
+        } else {
+          debugPrint('not print');
+        }
       }
     } catch (e) {
       // ignore: avoid_print
@@ -123,7 +130,6 @@ class _ContactDashboardState extends State<ContactDashboard> {
       var url = Uri.https(
         SessionUrl().baseUrl,
         '/home/searchCategories/passkeysatnam9041110310/$abc',
-        {'q': '{http}'},
       );
       var response = await http.get(url);
       if (!mounted) return;

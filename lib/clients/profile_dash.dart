@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fixsathi/classPack/sessions_file.dart';
+import 'package:fixsathi/clients/account_delete.dart';
 import 'package:fixsathi/clients/add_cart.dart';
 import 'package:fixsathi/clients/dashboard_user.dart';
 import 'package:fixsathi/clients/order_list.dart';
@@ -91,6 +92,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     (userData['category'] != 'customer') ? '(${userData['service']})' : '',
     'My Wallet',
     'Terms & Condition',
+    'Account Delete',
   ];
   void translate() async {
     try {
@@ -117,6 +119,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             : '',
         'My Wallet',
         'Terms & Condition',
+        'Account Delete',
       ];
       if (usersAll['language'] == 'punjabi') {
         var futures = languages.map((item) async {
@@ -313,18 +316,20 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                           color: Colors.black87,
                         ),
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (BuildContext context) => EditClient(
-                                title: 'Edit Profile',
-                                users: {
-                                  'users': userData['mobileno'].toString(),
-                                  'category': userData['category'].toString(),
-                                  'language': userData['language'].toString(),
-                                },
+                          if (userData['category'] != 'not') {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => EditClient(
+                                  title: 'Edit Profile',
+                                  users: {
+                                    'users': userData['mobileno'].toString(),
+                                    'category': userData['category'].toString(),
+                                    'language': userData['language'].toString(),
+                                  },
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                       ),
                     ),
@@ -517,42 +522,46 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 15.0,
-                        vertical: 5.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            width: 1.0,
-                            color: Colors.blue.shade800,
+                    if (userData['category'] != 'not')
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 15.0,
+                          vertical: 5.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1.0,
+                              color: Colors.blue.shade800,
+                            ),
                           ),
                         ),
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.card_travel,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        title: Text(getlangs[16].toString()),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (BuildContext context) => TermCondition(
-                                title: getlangs[16].toString(),
-                                users: {
-                                  'category': userData['category'].toString(),
-                                  'phoneno': userData['mobileno'].toString(),
-                                  'lang': userData['language'].toString(),
-                                },
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.card_travel,
+                            color: Colors.teal,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          title: Text(getlangs[16].toString()),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TermCondition(
+                                      title: getlangs[16].toString(),
+                                      users: {
+                                        'category': userData['category']
+                                            .toString(),
+                                        'phoneno': userData['mobileno']
+                                            .toString(),
+                                        'lang': userData['language'].toString(),
+                                      },
+                                    ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
                     if (userData['category'] == 'customer')
                       Container(
                         margin: EdgeInsets.symmetric(
@@ -746,89 +755,124 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                           },
                         ),
                       ),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 15.0,
-                        vertical: 5.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            width: 1.0,
-                            color: Colors.blue.shade800,
+                    if (userData['category'] != 'not')
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 15.0,
+                          vertical: 5.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1.0,
+                              color: Colors.blue.shade800,
+                            ),
                           ),
                         ),
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.shopify,
-                          color: Colors.blueAccent,
-                          size: 28,
-                          fontWeight: FontWeight.bold,
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.shopify,
+                            color: Colors.blueAccent,
+                            size: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          title: Text(getlangs[7].toString()),
+                          onTap: () {
+                            if ((userData['category'].toString() != 'null') ||
+                                (userData['category'].toString() != 'not')) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) => CartList(
+                                    title: 'Cart List',
+                                    details: {
+                                      'phoneno': userData['mobileno']
+                                          .toString(),
+                                      'lang': userData['language'].toString(),
+                                      'category': userData['category']
+                                          .toString(),
+                                      'username': userData['client_name']
+                                          .toString(),
+                                      'subcate': userData['service'].toString(),
+                                    },
+                                  ),
+                                ),
+                              );
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'First Update your registration then working fine?',
+                                  ),
+                                  backgroundColor: Color.fromARGB(
+                                    255,
+                                    243,
+                                    25,
+                                    25,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        title: Text(getlangs[7].toString()),
-                        onTap: () {
-                          if ((userData['category'].toString() != 'null') ||
-                              (userData['category'].toString() != 'not')) {
+                      ),
+                    if (userData['category'] != 'not')
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 15.0,
+                          vertical: 5.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1,
+                              color: Colors.blue.shade800,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          title: Text(getlangs[17].toString()),
+                          onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (BuildContext context) => CartList(
-                                  title: 'Cart List',
-                                  details: {
-                                    'phoneno': userData['mobileno'].toString(),
-                                    'lang': userData['language'].toString(),
-                                    'category': userData['category'].toString(),
-                                    'username': userData['client_name']
-                                        .toString(),
-                                    'subcate': userData['service'].toString(),
-                                  },
-                                ),
+                                builder: (BuildContext context) =>
+                                    AccountDeletionScreen(userData: userData),
                               ),
                             );
-                          } else {
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'First Update your registration then working fine?',
-                                ),
-                                backgroundColor: Color.fromARGB(
-                                  255,
-                                  243,
-                                  25,
-                                  25,
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                          },
+                        ),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 15.0,
-                        vertical: 5.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            width: 1,
-                            color: Colors.blue.shade800,
+                    if (userData['category'] != 'not')
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 15.0,
+                          vertical: 5.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1,
+                              color: Colors.blue.shade800,
+                            ),
                           ),
                         ),
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.logout_sharp,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.logout_sharp,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          title: Text(getlangs[10].toString()),
+                          onTap: () {
+                            _logout(context);
+                          },
                         ),
-                        title: Text(getlangs[10].toString()),
-                        onTap: () {
-                          _logout(context);
-                        },
                       ),
-                    ),
                     SizedBox(height: 30.0),
                   ],
                 ),

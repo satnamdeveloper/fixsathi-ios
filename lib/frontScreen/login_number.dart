@@ -105,7 +105,7 @@ class _SelectMobileState extends State<SelectMobile> {
       if (response.statusCode == 200) {
         // List<String> items = [];
         var getlist = convert.jsonDecode(response.body);
-
+        debugPrint(getlist['status']);
         // print(getlist);
         if (getlist['status'] == 'success') {
           Map<String, dynamic>? userall = {
@@ -139,7 +139,14 @@ class _SelectMobileState extends State<SelectMobile> {
               ),
             ),
           );
-
+        } else if (getlist['status'] == 'wrongs') {
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Your account has been deleted'),
+              backgroundColor: Color.fromARGB(255, 243, 18, 18),
+            ),
+          );
           // } else if (getlist['status'] == 'error') {
           //   EasyLoading.showToast(
           //     'This user already in runing mode Kindly try again later ',
@@ -170,7 +177,6 @@ class _SelectMobileState extends State<SelectMobile> {
 
   @override
   Widget build(BuildContext context) {
-    // print(getcode.toString());
     return Scaffold(
       backgroundColor: Colors.white,
 

@@ -13,6 +13,7 @@ import 'package:fixsathi/clients/page_view.dart';
 import 'package:fixsathi/clients/property.dart';
 import 'package:fixsathi/clients/review.dart';
 import 'package:fixsathi/frontScreen/client_reg.dart';
+import 'package:fixsathi/frontScreen/login_number.dart';
 import 'package:fixsathi/frontScreen/shopk_reg.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
@@ -1441,12 +1442,23 @@ class _HomeDashboardState extends State<HomeDashboard> {
     return Expanded(
       child: InkWell(
         onTap: () {
-          if (category == 'customer' || category == 'not') {
+          if (category == 'customer') {
             Navigator.of(context)
                 .push(
                   MaterialPageRoute(
                     builder: (BuildContext context) =>
                         AddtoCart(title: 'Add to Cart', category: categories),
+                  ),
+                )
+                .then((value) {
+                  _getSessionCart();
+                });
+          } else if (category == null || category == 'not') {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        SelectMobile(title: 'Add to Cart'),
                   ),
                 )
                 .then((value) {
