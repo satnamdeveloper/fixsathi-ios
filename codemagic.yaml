@@ -22,38 +22,33 @@ workflows:
     scripts:
       - name: Set up code signing profiles
         script: |
-          xcode-project use-profiles --set-target-bundle-identifier
-      - name: Turn off Swift Package Manager Netwide
+          xcode-project use-profiles
+      - name: Clean Project and Get Flutter packages
         script: |
-          # यह कमांड फ़्लटर को ज़बरदस्ती SwiftPM इस्तेमाल करने से रोकेगी
-          flutter config --no-enable-swift-package-manager
-      - name: Get Flutter packages
-        script: |
+          flutter clean
           flutter packages pub get
       - name: Install and Update Robust CocoaPods
         script: |
-          # अगर कैशे में पुरानी फ़ाइलें हैं, तो उन्हें हटाकर फ्रेश इंस्टॉल करें
           cd ios
           pod cache clean --all
           rm -rf Pods Podfile.lock
           pod repo update
           # --repo-update फ़्लैग के साथ पॉड्स इंस्टॉल करें
           pod install --repo-update
+      - name: Flutter build ipa with Pods preference
+        script: |
+          flutter build ipa --release --no-pub \
+            --build-name=1.7.0 \
+            --build-number=$(($BUILD_NUMBER)) \
+            --export-options-plist=/Users/builder/export_options.plist
       - name: Build versioning
         script: |
             cd ios
             agvtool new-version -all $(($BUILD_NUMBER))
-      - name: Flutter build ipa with Pods preference
-        script: |
-          # यहाँ ज़बरदस्ती CocoaPods के ज़रिए फ्रेश री-बिल्ड कमांड दी गई है
-          flutter clean
-          flutter pub get
-          flutter build ipa --release --no-pub \
-            --export-options-plist=/Users/builder/export_options.plist
+      
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
     publishing:
       # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
       email:
@@ -72,14 +67,9 @@ workflows:
           failure: false # To not receive a notification when a build fails
       app_store_connect:
         auth: integration
-        
-        # Configuration related to TestFlight (optional)
-        # Note: This action is performed during post-processing.
         submit_to_testflight: true
-        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-          - group name 1
-          - group name 2
-    
+        # beta_groups:
+        #   - group name 1
         # Configuration related to App Store (optional)
         # Note: This action is performed during post-processing.
         submit_to_app_store: false
