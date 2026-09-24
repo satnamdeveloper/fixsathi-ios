@@ -81,8 +81,8 @@ flutter_launcher_icons:
   adaptive_icon_monochrome: "assets/icon/monochrome.png"
 # The following section is specific to Flutter packages.
 flutter:
-  config:
-    enable-swift-package-manager: false 
+  # config:
+  #   enable-swift-package-manager: false 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
