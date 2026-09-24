@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
-import Firebase
-import FirebaseMessaging
+import FirebaseMessaging // मैसेजिंग रखें
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -10,10 +9,6 @@ import FirebaseMessaging
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     
-    // 3. फायरबेस को कॉन्फ़िगर करें
-    FirebaseApp.configure()
-    
-    // 4. iOS पुश नोटिफिकेशन के लिए रजिस्टर करें
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
       let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
