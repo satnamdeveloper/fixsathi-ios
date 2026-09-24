@@ -1,6 +1,5 @@
 import Flutter
 import UIKit
-import Firebase
 import FirebaseMessaging
 
 @main
@@ -11,12 +10,12 @@ import FirebaseMessaging
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     
-    FirebaseApp.configure()
-    
+    // 1. सबसे पहले Flutter के सभी प्लगइन्स को रजिस्टर करें
     GeneratedPluginRegistrant.register(with: self)
     
+    // 2. iOS 10+ के लिए पुश नोटिफिकेशन की परमिशन और डेलीगेट सेट करें
     if #available(iOS 10.0, *) {
-      UNUserNotificationCenter.current().delegate = self
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
       let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
       UNUserNotificationCenter.current().requestAuthorization(
         options: authOptions,
