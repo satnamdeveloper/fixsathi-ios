@@ -63,8 +63,4 @@ workflows:
     
         # Configuration related to App Store (optional)
         # Note: This action is performed during post-processing.
-<<<<<<< HEAD
         submit_to_app_store: false
-=======
-        submit_to_app_store: false
->>>>>>> bc94f02964051f5b8afa5ffff51e6a4d77e1aa91
