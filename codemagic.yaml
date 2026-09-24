@@ -5,13 +5,6 @@ workflows:
     max_build_duration: 60
     integrations:
       app_store_connect: CD-Manager
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-          source: true
     environment:
       ios_signing:
         distribution_type: app_store
