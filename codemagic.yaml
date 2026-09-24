@@ -8,11 +8,11 @@ workflows:
     triggering:
       events:
         - push
+      cancel_old_builds_on_new_push: true
       branch_patterns:
         - pattern: main
           include: true
           source: true
-      cancel_old_builds_on_new_push: true
     environment:
       ios_signing:
         distribution_type: app_store
