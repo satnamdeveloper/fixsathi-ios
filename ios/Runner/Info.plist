@@ -113,8 +113,6 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 	    <string>com.fixsathi.fixsathi.backgroundTask</string>
-	    <string>com.fixsathi.fixsathi</string>
-	    <string>be.tramckrijte.workmanager.BackgroundTask</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>We need camera access to capture and upload photos of your documents for partner verification, or to share photos of home service requirements.</string>
