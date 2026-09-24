@@ -5,6 +5,14 @@ workflows:
     max_build_duration: 60
     integrations:
       app_store_connect: CD-Manager
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_old_builds_on_new_push: true
     environment:
       ios_signing:
         distribution_type: app_store
@@ -16,19 +24,32 @@ workflows:
       - name: Set up code signing profiles
         script: |
           xcode-project use-profiles --set-target-bundle-identifier
+      - name: Turn off Swift Package Manager Netwide
+        script: |
+          # यह कमांड फ़्लटर को ज़बरदस्ती SwiftPM इस्तेमाल करने से रोकेगी
+          flutter config --no-enable-swift-package-manager
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Install pods
+      - name: Install and Update Robust CocoaPods
         script: |
-          find . -name "Podfile" -execdir pod install \;
+          # अगर कैशे में पुरानी फ़ाइलें हैं, तो उन्हें हटाकर फ्रेश इंस्टॉल करें
+          cd ios
+          pod cache clean --all
+          rm -rf Pods Podfile.lock
+          pod repo update
+          # --repo-update फ़्लैग के साथ पॉड्स इंस्टॉल करें
+          pod install --repo-update
       - name: Build versioning
         script: |
-            cd ./ios
+            cd ios
             agvtool new-version -all $(($BUILD_NUMBER))
-      - name: Flutter build ipa and automatic versioning
+      - name: Flutter build ipa with Pods preference
         script: |
-          flutter build ipa --release \
+          # यहाँ ज़बरदस्ती CocoaPods के ज़रिए फ्रेश री-बिल्ड कमांड दी गई है
+          flutter clean
+          flutter pub get
+          flutter build ipa --release --no-pub \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
