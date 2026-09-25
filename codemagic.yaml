@@ -6,6 +6,8 @@ workflows:
     integrations:
       app_store_connect: CD-Manager
     environment:
+      vars:
+      APP_STORE_APPLE_ID: 6809440997
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.fixsathi.fixsathi
@@ -26,11 +28,10 @@ workflows:
           pod cache clean --all
           rm -rf Pods Podfile.lock
           pod repo update
-          # --repo-update फ़्लैग के साथ पॉड्स इंस्टॉल करें
           pod install --repo-update
       - name: Flutter build ipa with Pods preference
         script: |
-          flutter build ipa --release --no-pub \
+          flutter build ipa --release \
             --build-name=1.7.0 \
             --build-number=$(($BUILD_NUMBER)) \
             --export-options-plist=/Users/builder/export_options.plist
@@ -38,7 +39,6 @@ workflows:
         script: |
             cd ios
             agvtool new-version -all $(($BUILD_NUMBER))
-      
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -46,7 +46,7 @@ workflows:
       # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
       email:
         recipients:
-          - sukhdeepsinghbham@gmail.com
+          - satnamdeveloper1@gmail.com
           - satnamdass25@gmail.com
         notify:
           success: true # To receive a notification when a build succeeds
@@ -60,7 +60,9 @@ workflows:
           failure: false # To not receive a notification when a build fails
       app_store_connect:
         auth: integration
+
         submit_to_testflight: true
+        beta_flight_checker: true
         # beta_groups:
         #   - group name 1
         # Configuration related to App Store (optional)
