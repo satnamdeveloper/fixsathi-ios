@@ -6,8 +6,6 @@ workflows:
     integrations:
       app_store_connect: CD-Manager
     environment:
-      vars:
-      APP_STORE_APPLE_ID: 6809440997
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.fixsathi.fixsathi
