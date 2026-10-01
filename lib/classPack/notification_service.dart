@@ -7,7 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:googleapis_auth/auth_io.dart';
 // ignore: library_prefixes
-import 'package:permission_handler/permission_handler.dart' as AppSettings;
+// import 'package:permission_handler/permission_handler.dart' as AppSettings;
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -50,7 +50,7 @@ class NotificationService {
       case AuthorizationStatus.denied:
         debugPrint("❌ Notification permission denied");
         // Optionally guide user to settings
-        AppSettings.openAppSettings();
+        // AppSettings.openAppSettings();
         break;
 
       default:
@@ -99,12 +99,6 @@ class NotificationService {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      // if (kDebugMode) {
-      //   print("Notification Title: ${message.notification!.title}");
-      //   print("Notification body: ${message.notification!.body}");
-      //   print("Notification data: ${message.data}");
-      //   print("Notification data: ${message.data['screen']}");
-      // }
       if (Platform.isIOS) {
         // ignore: use_build_context_synchronously
         iosForegroundMessage(context, message);
