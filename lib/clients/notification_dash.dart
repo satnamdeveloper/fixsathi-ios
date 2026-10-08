@@ -31,7 +31,7 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
   // File? _selectedFile;
   final translator = GoogleTranslator();
   Location location = Location();
-  String? userLang;
+  String? userLang, appids;
   List cartlist = [];
   Timer? _timer;
   Map<String, dynamic> userData = {
@@ -54,10 +54,11 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
     super.initState();
     _notificationService.requestNotificationPermission();
     _initStart();
-
+    updateAppid();
     _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
       if (!mounted) return;
       mynotify();
+      updateAppid();
     });
     Future.delayed(const Duration(seconds: 1), () {
       if (!mounted) return;
@@ -70,11 +71,39 @@ class _NotificationDashboardState extends State<NotificationDashboard> {
 
   Future<void> _initStart() async {
     await _getSessions();
+    _notificationService.getDeviceToken().then((onValue) {
+      if (!mounted) return;
+      setState(() {
+        appids = onValue;
+      });
+    });
     Future.delayed(const Duration(milliseconds: 150), () {
       if (!mounted) return;
       translate();
     });
     mynotify();
+  }
+
+  Future<void> updateAppid() async {
+    if (userData['mobileno'] == 'no' || appids == null) return;
+    try {
+      var url = Uri.https(SessionUrl().baseUrl, 'home/updateApp');
+      var response = await http.post(
+        url,
+        body: {
+          'mobileno': userData['mobileno'],
+          'appid': appids,
+          'keyset': 'pass_key@satnam9041110310',
+        },
+      );
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        final getres = convert.jsonDecode(response.body);
+        return getres;
+      }
+    } catch (e) {
+      debugPrint('Update token error: $e');
+    }
   }
 
   Future<void> _getSessions() async {

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert' as convert;
 
-import 'package:fixsathi/classPack/notification_service.dart';
 import 'package:fixsathi/classPack/sessions_file.dart';
 import 'package:fixsathi/clients/contact_dash.dart';
 import 'package:fixsathi/clients/home_dash.dart';
@@ -21,13 +20,12 @@ class MainDashboard extends StatefulWidget {
 
 class _MainDashboardState extends State<MainDashboard> {
   double? lat, lng;
-  final NotificationService _notificationService = NotificationService();
   final ValueNotifier<List<dynamic>> _itemsList1 = ValueNotifier<List<dynamic>>(
     [],
   );
   // File? _selectedFile;
   final translator = GoogleTranslator();
-  String? userLang, appids;
+  String? userLang;
   Map<String, dynamic>? getupdate;
   Map<String, dynamic> userData = {
     'userid': 'no',
@@ -50,8 +48,6 @@ class _MainDashboardState extends State<MainDashboard> {
   @override
   void initState() {
     super.initState();
-    _notificationService.requestNotificationPermission();
-    updateAppid();
     _initDashboard();
     _timer = Timer.periodic(Duration(seconds: 25), (timer) async {
       if (!mounted) return;
@@ -61,18 +57,9 @@ class _MainDashboardState extends State<MainDashboard> {
 
   Future<void> _initDashboard() async {
     await _getSessions(); // Session ka wait karein
-    _notificationService.getDeviceToken().then((onValue) {
-      if (!mounted) return;
-      setState(() {
-        appids = onValue;
-      });
-    });
+
     _notification();
     translate();
-    Future.delayed(const Duration(seconds: 15), () {
-      if (!mounted) return;
-      updateAppid();
-    });
   }
 
   Future<void> _notification() async {
@@ -100,28 +87,6 @@ class _MainDashboardState extends State<MainDashboard> {
       }
     } catch (e) {
       debugPrint('notification error: $e');
-    }
-  }
-
-  Future<void> updateAppid() async {
-    if (userData['mobileno'] == 'no' || appids == null) return;
-    try {
-      var url = Uri.https(SessionUrl().baseUrl, 'home/updateApp');
-      var response = await http.post(
-        url,
-        body: {
-          'mobileno': userData['mobileno'],
-          'appid': appids,
-          'keyset': 'pass_key@satnam9041110310',
-        },
-      );
-      if (!mounted) return;
-      if (response.statusCode == 200) {
-        final getres = convert.jsonDecode(response.body);
-        return getres;
-      }
-    } catch (e) {
-      debugPrint('Update token error: $e');
     }
   }
 
@@ -201,8 +166,6 @@ class _MainDashboardState extends State<MainDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    _notificationService.init(context);
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
