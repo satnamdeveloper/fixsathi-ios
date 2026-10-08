@@ -122,7 +122,5 @@
 	<string>We need your location to auto-fill your current address during partner registration and to connect you with nearby home service requests.</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Fix Sathi requires notification access to send you real-time updates regarding your service bookings, provider status, and important alerts.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This permission allows us to deliver personalized home service offers and tailored notifications based on your preferences.</string>
 </dict>
 </plist>
