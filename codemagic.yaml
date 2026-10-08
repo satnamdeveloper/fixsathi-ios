@@ -32,7 +32,7 @@ workflows:
       - name: Flutter build ipa with Pods preference
         script: |
           flutter build ipa --release --no-pub \
-            --build-name=1.7.0 \
+            --build-name=1.7.1 \
             --build-number=$(($BUILD_NUMBER)) \
             --export-options-plist=/Users/builder/export_options.plist
       - name: Build versioning
